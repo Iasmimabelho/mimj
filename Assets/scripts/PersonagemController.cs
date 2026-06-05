@@ -2,57 +2,40 @@ using UnityEngine;
 
 public class PersonagemController : MonoBehaviour
 {
-    public Rigidbody2D rb2d;
+    private Rigidbody2D rb2d;
+
+    [Header("Movimento")]
     public float vel = 5f;
     public float forcaPulo = 8f;
 
     [Header("Ground Check")]
-    public Transform groundCheck;
-    public float groundRadius = 0.2f;
-    public LayerMask groundLayer;
+    public GroundCheck groundCheck;
 
-    private bool noChao;
-
-    void Start()
+    private void Awake()
     {
         rb2d = GetComponent<Rigidbody2D>();
     }
 
-    void Update()
+    private void Update()
     {
-        // Verifica se está no chão
-        noChao = Physics2D.OverlapCircle(
-            groundCheck.position,
-            groundRadius,
-            groundLayer
-        );
+        float horizontal = Input.GetAxisRaw("Horizontal");
 
-        // Movimento horizontal
-        float horizontalInput = Input.GetAxis("Horizontal");
         rb2d.velocity = new Vector2(
-            horizontalInput * vel,
+            horizontal * vel,
             rb2d.velocity.y
         );
 
-        // Pulo
-        if (Input.GetKeyDown(KeyCode.Space) && noChao)
+        if (Input.GetKeyDown(KeyCode.Space) && groundCheck.noChao)
         {
             rb2d.velocity = new Vector2(
                 rb2d.velocity.x,
                 forcaPulo
             );
         }
-    }
 
-    private void OnDrawGizmosSelected()
-    {
-        if (groundCheck != null)
-        {
-            Gizmos.color = Color.red;
-            Gizmos.DrawWireSphere(
-                groundCheck.position,
-                groundRadius
-            );
-        }
+        // Impede sair pelos lados
+        Vector3 pos = transform.position;
+        pos.x = Mathf.Clamp(pos.x, -8f, 8f);
+        transform.position = pos;
     }
 }
