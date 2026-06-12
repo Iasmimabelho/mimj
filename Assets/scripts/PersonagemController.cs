@@ -1,41 +1,32 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class PersonagemController : MonoBehaviour
 {
-    private Rigidbody2D rb2d;
+    public Rigidbody2D rb2d;
+    public float vel;
+    public float jumpForce;
+    public GameObject groundCheck;
+    private GroundCheck groundCheckScript;
 
-    [Header("Movimento")]
-    public float vel = 5f;
-    public float forcaPulo = 8f;
-
-    [Header("Ground Check")]
-    public GroundCheck groundCheck;
-
-    private void Awake()
+    void Start()
     {
-        rb2d = GetComponent<Rigidbody2D>();
+        rb2d = this.GetComponent<Rigidbody2D>();
+        groundCheckScript = groundCheck.GetComponent<GroundCheck>();
     }
 
-    private void Update()
+    void Update()
     {
-        float horizontal = Input.GetAxisRaw("Horizontal");
-
-        rb2d.velocity = new Vector2(
-            horizontal * vel,
-            rb2d.velocity.y
-        );
-
-        if (Input.GetKeyDown(KeyCode.Space) && groundCheck.noChao)
+        float horizontalInput = Input.GetAxis("Horizontal");
+        if (rb2d.velocity.magnitude < 5)
         {
-            rb2d.velocity = new Vector2(
-                rb2d.velocity.x,
-                forcaPulo
-            );
+            rb2d.velocity += new Vector2(vel, 0) * horizontalInput * Time.deltaTime;
+        }
+        if (Input.GetKey(KeyCode.Space) && groundCheckScript.isOnGround)
+        {
+            rb2d.velocity = new Vector2(rb2d.velocity.x, jumpForce);
         }
 
-        // Impede sair pelos lados
-        Vector3 pos = transform.position;
-        pos.x = Mathf.Clamp(pos.x, -8f, 8f);
-        transform.position = pos;
     }
 }

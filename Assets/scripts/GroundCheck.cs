@@ -1,25 +1,23 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class GroundCheck : MonoBehaviour
 {
-    public LayerMask groundLayer;
-
-    [HideInInspector]
-    public bool noChao;
-
-    private void OnTriggerStay2D(Collider2D collision)
+    public bool isOnGround;
+   private void OnTriggerEnter2D(Collider2D other)
     {
-        if (((1 << collision.gameObject.layer) & groundLayer) != 0)
+        if (other.CompareTag("Ground"))
         {
-            noChao = true;
+            isOnGround = true;
         }
     }
 
-    private void OnTriggerExit2D(Collider2D collision)
+    private void OnTriggerExit2D(Collider2D other)
     {
-        if (((1 << collision.gameObject.layer) & groundLayer) != 0)
+         if (other.CompareTag("Ground"))
         {
-            noChao = false;
+            isOnGround = false;
         }
     }
 }
